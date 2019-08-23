@@ -1,0 +1,34 @@
+<table class="pvtTable" [attr.data-numrows]="rowKeys.length" [attr.data-numcols]="colKeys.length">
+	<thead>
+		<tr *ngFor="let c of colAttrs; index as j">
+			<th *ngIf="j==0 && rowAttrs.length!==0" [attr.colspan]="rowAttrs.length" [attr.rowspan]="colAttrs.length">
+			<th class="pvtAxisLabel">{{c}}</th>
+			<ng-container *ngFor="let ck of colKeys; index as i">
+				<th *ngIf="drawable(colKeys,i,j)" class="pvtColLabel" [attr.colspan]="spanSize(colKeys,i,j)" [attr.rowspan]="(j==(colAttrs.length-1) && rowAttrs.length !== 0) ? 2 : null">
+					{{ck}}
+				</th>
+			</ng-container>
+			<th *ngIf="j==0 || opts.table.rowTotals" class="pvtTotalLabel pvtRowTotalLabel" [attr.rowspan]="colAttrs.length+(rowAttrs.length==0?0:1)">{{opts.localeStrings.totals}}</th>
+		</tr>
+		<tr *ngIf="rowAttrs.length!=0">
+			<th *ngFor="let r of rowAttrs; index as i" class="pvtAxisLabel">{{r}}</th>
+			<th [ngClass]="{'pvtTotalLabel': colAttrs.length == 0, 'pvtRowTotalLabel': colAttrs.length == 0}">{{colAttrs.length === 0 ? opts.localeStrings.totals : ''}}</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr *ngFor="let rk of rowKeys; index as i">
+			<ng-container *ngFor="let txt of rk; index as j">
+				<th *ngIf="drawable(rowKeys,i,j)" class="pvtRowLabel" [attr.rowspan]="spanSize(rowKeys,i,j)" [attr.colspan]="(j==(rowAttrs.length-1) && colAttrs.length !== 0)?2:null">{{txt}}</th>
+			</ng-container>
+			<ng-container *ngFor="let ck of colKeys; index as j">
+				<td [ngClass]="'pvtVal' + ' row'+i + ' col'+j" [attr.data-value]="value(rk,ck)" (click)="clickCallback(rk,ck,$event)">{{formattedValue(rk,ck)}}</td>
+			</ng-container>
+			<td *ngIf="opts.table.rowTotals || colAttrs.length == 0" class="pvtTotal rowTotal" [attr.data-value]="value(rk,[])" [attr.data-for]="'row'+i" (click)="clickCallback(rk,[],$event)">{{formattedValue(rk,[])}}</td>
+		</tr>
+		<tr *ngIf="opts.table.colTotals||rowAttrs.length==0">
+			<th class="pvtTotalLabel pvtColTotalLabel" [attr.colspan]="rowAttrs.length + (colAttrs.length == 0 ? 0 : 1)">{{opts.localeStrings.totals}}</th>
+			<td *ngFor="let ck of colKeys; index as j" class="pvtTotal colTotal" [attr.data-value]="value([],ck)" [attr.data-for]="'col'+j" (click)="clickCallback([],ck,$event)">{{formattedValue([],ck)}}</td>
+			<td *ngIf="opts.table.rowTotals||colAttrs.length==0" class="pvtGrandTotal" [attr.data-value]="value([],[])"  (click)="clickCallback([],[],$event)">{{formattedValue([],[])}}</td>
+		<tr>
+	</tbody>
+</table>
