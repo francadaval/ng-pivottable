@@ -1,5 +1,7 @@
 import { Aggregator, VoidAggregator, CountAggregator, AGGREGATORS } from './aggregators'
 import { Sorter, naturalSort } from './sorters'
+import { Deriver, DerivedAttributes } from './derivers'
+import { Record, Data } from './types'
 
 export class PivotData {
 	protected aggregator: Aggregator
@@ -10,8 +12,8 @@ export class PivotData {
 	protected sorters: {[key: string]: Sorter}
 	protected rowOrder: string
 	protected colOrder: string
-	protected derivedAttributes: {[key: string]: (record) => any}
-	protected filter: (record) => boolean
+	protected derivedAttributes: DerivedAttributes
+	protected filter: (record:Record) => boolean
 
 	protected _rowKeys: string[][] = [];
 	protected _colKeys: string[][] = [];
@@ -44,23 +46,23 @@ export class PivotData {
 		this.rowOrder = opts.rowOrder ? opts.rowOrder : "key_a_to_z";
 		this.colOrder = opts.colOrder ? opts.colOrder : "key_a_to_z";
 		this.derivedAttributes = opts.derivedAttributes ? opts.derivedAttributes : {};
-		this.filter = opts.filter ? opts.filter : (record) => true;
+		this.filter = opts.filter ? opts.filter : (record:Record) => true;
 		this.allTotal = this.aggregator.newAggregator(this, [], []);
 		this.sorted = false;
 		
-		this.forEachRecord(this.input, this.derivedAttributes, (record) => {
+		this.forEachRecord(this.input, this.derivedAttributes, (record:Record) => {
 			if (this.filter(record)) {
 				return this.processRecord(record);
 			}
 		})
 	}
 
-	protected forEachRecord = function(input, derivedAttributes: {[key: string]: (record) => any}, f) {
+	protected forEachRecord = function(input: Data, derivedAttributes: DerivedAttributes, f: (record: Record) => any) {
 		//var compactRecord, i, j, k, l, len1, record, ref, results, results1, tblCols;
 
 		let addRecord = f;
 		if (Object.keys(derivedAttributes).length != 0) {
-			addRecord = function(record) {
+			addRecord = function(record:Record) {
 				var ref, v;
 				for (let dAttr in derivedAttributes) {
 					let value = derivedAttributes[dAttr](record)
@@ -70,9 +72,10 @@ export class PivotData {
 			};
 		}
 
-		if (typeof input == 'function') {
+		// TODO: Type 'function' for data
+		/*if (typeof input == 'function') {
 			return input(addRecord);
-		} else if (Array.isArray(input)) {
+		} else*/ if (Array.isArray(input)) {
 			if (Array.isArray(input[0])) {
 				let results = [];
 				for(let i = 1; i < input.length; ++i) {
@@ -111,7 +114,7 @@ export class PivotData {
 	};
 
 	protected forEachMatchingRecord(criteria, callback) {
-		return this.forEachRecord(this.input, this.derivedAttributes, (record) => {
+		return this.forEachRecord(this.input, this.derivedAttributes, (record:Record) => {
 			if (this.filter(record)) {
 				for (let k in criteria) {
 					if (criteria[k] !== (record[k]) != null ? record[k] : "null") {
@@ -123,27 +126,19 @@ export class PivotData {
 		})
 	};
 
-	protected sorter(attr): Sorter {
+	protected sorter(attr:string): Sorter {
 		return this.sorters[attr] || naturalSort;
 	};
 
-	protected arrSort(attrs): Sorter {
-		let sortersArr = [];
-		for(let l = 0, len1 = attrs.length; l < len1; l++) {
-			let a = attrs[l];
-			sortersArr.push(this.sorter(a));
-		}
+	protected arrSort(attrs:string[]): Sorter {
+		let sortersArr = attrs.map((attr) => this.sorter(attr));
 		
-		return function(a, b) {
-			var comparison, i, sorter;
-			for (i in sortersArr) {
-				if (!sortersArr.hasOwnProperty(i)) continue;
-				sorter = sortersArr[i];
-				comparison = sorter(a[i], b[i]);
-				if (comparison !== 0) {
-					return comparison;
-				}
+		return function(a:any[], b:any[]) {
+			for (let i in sortersArr) {
+				let c = sortersArr[i](a[i], b[i]);
+				if( c ) return c;
 			}
+
 			return 0;
 		};
 	};
@@ -174,7 +169,7 @@ export class PivotData {
 		}
 	};
 
-	protected processRecord(record) {
+	protected processRecord(record:Record) {
 		let colKey: string[] = [];
 		let rowKey: string[] = [];
 		for (let l = 0, len1 = this.colAttrs.length; l < len1; l++) {
@@ -215,7 +210,7 @@ export class PivotData {
 		}
 	};
 
-	getAggregator(rowKey, colKey): Aggregator {
+	getAggregator(rowKey:string[], colKey:string[]): Aggregator {
 		let agg: Aggregator
 		let flatRowKey = rowKey.join(String.fromCharCode(0));
 		let flatColKey = colKey.join(String.fromCharCode(0));

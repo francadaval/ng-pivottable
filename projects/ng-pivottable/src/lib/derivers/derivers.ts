@@ -1,10 +1,15 @@
+import { Record } from '../types'
+
 const mthNamesEn = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 const dayNamesEn = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
 const zeroPad = (n :number) => ("0" + n).substr(-2, 2);
 
+export type Deriver = (record:Record) => any
+export type DerivedAttributes = {[dAttr:string]: Deriver}
+
 export const DERIVERS = {
 	bin: function(col, binWidth) {
-		return function(record) {
+		return function(record:Record) {
 			return record[col] - record[col] % binWidth;
 		};
 	},
@@ -20,7 +25,7 @@ export const DERIVERS = {
 			dayNames = dayNamesEn;
 		}
 		utc = utcOutput ? "UTC" : "";
-		return function(record) {
+		return function(record:Record) {
 			var date;
 			date = new Date(Date.parse(record[col]));
 			if (isNaN(date)) {

@@ -1,28 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { PivotData } from './pivot-data'
-
-const DEFAULTS = {
-	cols: [],
-	rows: [],
-	vals: [],
-	rowOrder: "key_a_to_z",
-	colOrder: "key_a_to_z",
-	dataClass: PivotData,
-	filter: function() {
-		return true;
-	},
-	aggregatorName: "Count",
-	sorters: {},
-	derivedAttributes: {},
-	table: {
-		clickCallback: null,
-		rowTotals: true,
-		colTotals: true
-	},
-	localeStrings: {
-		totals: "Totals"
-	}
-};
+import { Options, DEFAULT_OPTIONS } from './options'
 
 @Component({
 	selector: 'ng-pivottable',
@@ -45,12 +23,12 @@ export class NgPivottableComponent implements OnInit {
 	locale: string = 'en';
 
 	@Input('options')
-	options
+	options: Options
 
 	constructor() { }
 
 	ngOnInit() {
-		this.pivotData = new PivotData(this.input,{...DEFAULTS,...this.options})
+		this.pivotData = new PivotData(this.input,{...DEFAULT_OPTIONS,...this.options})
 	}
 
 	drawable(arr,i,j) {
