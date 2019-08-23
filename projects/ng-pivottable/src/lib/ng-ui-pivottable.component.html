@@ -1,0 +1,7 @@
+<table class="pvtUi" cellpadding="5">
+	<td class="pvtUiCell">
+		<select class="pvtRenderer" (change)="changeRenderer(renderers[$event.target.value])">
+			<option *ngFor="let r of renderers | keyvalue" value="{{r.key}}">{{r.key}}</option>
+		</select>
+	</td>
+</table>
