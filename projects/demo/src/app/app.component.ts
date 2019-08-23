@@ -11,7 +11,7 @@ export class AppComponent {
   options = {
         rows: ["Province"],
         cols: ["Party"],
-        aggregatorName: "Integer Sum",
+        aggregatorName: "Average",
         vals: ["Age"],
         rendererName: "Heatmap",
         rendererOptions: {

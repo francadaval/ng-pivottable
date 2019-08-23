@@ -30,7 +30,7 @@ export class QuantileAggregator extends AbstractAggregator {
 }
 
 export class MedianAggregator extends QuantileAggregator {
-	constructor(attr, format: Formatter) {
+	constructor(attr, format: Formatter = US_FMT) {
 		super(attr, 0.5, format)
 	}
 }

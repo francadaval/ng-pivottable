@@ -1,4 +1,4 @@
-import { Aggregator, VoidAggregator, CountAggregator } from './aggregators'
+import { Aggregator, VoidAggregator, CountAggregator, AGGREGATORS } from './aggregators'
 import { Sorter, naturalSort } from './sorters'
 
 export class PivotData {
@@ -35,7 +35,7 @@ export class PivotData {
 		if (!this.opts)
 			this.opts = {};
 
-		this.aggregator = opts.aggregator ? opts.aggregator : new CountAggregator();
+		this.aggregator = opts.aggregator ? opts.aggregator : (opts.aggregatorName ? AGGREGATORS[opts.aggregatorName](opts.vals) : new CountAggregator());
 		this.aggregatorName = opts.aggregatorName ? opts.aggregatorName : "Count";
 		this.colAttrs = opts.cols ? opts.cols : [];
 		this.rowAttrs = opts.rows ? opts.rows : [];
@@ -127,7 +127,7 @@ export class PivotData {
 		return this.sorters[attr] || naturalSort;
 	};
 
-	protected arrSort = function(attrs): Sorter {
+	protected arrSort(attrs): Sorter {
 		let sortersArr = [];
 		for(let l = 0, len1 = attrs.length; l < len1; l++) {
 			let a = attrs[l];
@@ -148,7 +148,7 @@ export class PivotData {
 		};
 	};
 
-	protected sortKeys = function() {
+	protected sortKeys() {
 		if (!this.sorted) {
 			this.sorted = true;
 			let v = (r, c) => this.getAggregator(r, c).value();
@@ -174,7 +174,7 @@ export class PivotData {
 		}
 	};
 
-	protected processRecord = function(record) {
+	protected processRecord(record) {
 		let colKey: string[] = [];
 		let rowKey: string[] = [];
 		for (let l = 0, len1 = this.colAttrs.length; l < len1; l++) {
@@ -215,7 +215,7 @@ export class PivotData {
 		}
 	};
 
-	getAggregator = function(rowKey, colKey): Aggregator {
+	getAggregator(rowKey, colKey): Aggregator {
 		let agg: Aggregator
 		let flatRowKey = rowKey.join(String.fromCharCode(0));
 		let flatColKey = colKey.join(String.fromCharCode(0));

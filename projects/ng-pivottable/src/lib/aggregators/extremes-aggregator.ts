@@ -5,13 +5,16 @@ import { AbstractAggregator } from './aggregator'
 export class ExtremesAggregator extends AbstractAggregator {
 
 	protected val = null
+	protected sorter: Sorter = null
 	
-	constructor( protected attr, protected mode: string, protected sorter: Sorter, format:Formatter = US_FMT ) {
+	constructor( protected attr, protected mode: string, format:Formatter = US_FMT ) {
 		super(format)
 	}
 
-	newAggregator() {
-		return new ExtremesAggregator( this.attr, this.mode, this.sorter, this.format )
+	newAggregator(data) {
+		let agg = new ExtremesAggregator( this.attr, this.mode, this.format )
+		agg.sorter = this.sorter || data.sorter(this.attr);
+		return agg;
 	}
 
 	push(record) {
@@ -43,25 +46,25 @@ export class ExtremesAggregator extends AbstractAggregator {
 }
 
 export class MaxAggregator extends ExtremesAggregator {
-	constructor( attr, format: Formatter ) {
-		super(attr,'max',null,format)
+	constructor( attr, format: Formatter = US_FMT ) {
+		super(attr,'max',format)
 	}
 }
 
 export class MinAggregator extends ExtremesAggregator {
-	constructor( attr, format: Formatter ) {
-		super(attr,'min',null,format)
+	constructor( attr, format: Formatter = US_FMT ) {
+		super(attr,'min',format)
 	}
 }
 
 export class FirstAggregator extends ExtremesAggregator {
-	constructor( attr, sorter: Sorter, format: Formatter ) {
-		super(attr,'first',sorter,format)
+	constructor( attr, format: Formatter = US_FMT ) {
+		super(attr,'first',format)
 	}
 }
 
 export class LastAggregator extends ExtremesAggregator {
-	constructor( attr, sorter: Sorter, format: Formatter ) {
-		super(attr,'last',sorter,format)
+	constructor( attr, format: Formatter = US_FMT ) {
+		super(attr,'last',format)
 	}
 }

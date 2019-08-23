@@ -48,19 +48,19 @@ export class RunningStatAggregator extends AbstractAggregator{
 }
 
 export class AverageAggregator extends RunningStatAggregator {
-	constructor(attr, format) {
+	constructor(attr, format:Formatter = US_FMT) {
 		super( attr, 'mean', 1, format )
 	}
 }
 
 export class VarianceAggregator extends RunningStatAggregator {
-	constructor(attr, ddof, format) {
+	constructor(attr, ddof, format:Formatter = US_FMT) {
 		super( attr, 'var', ddof, format )
 	}
 }
 
 export class StandardDeviationAggregator extends RunningStatAggregator {
-	constructor(attr, ddof, format) {
+	constructor(attr, ddof, format:Formatter = US_FMT) {
 		super( attr, 'stdev', ddof, format )
 	}
 }

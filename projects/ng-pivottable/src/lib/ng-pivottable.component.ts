@@ -1,6 +1,5 @@
-import { Component, OnInit , Input } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { PivotData } from './pivot-data'
-import { CountAggregator } from './aggregators'
 
 const DEFAULTS = {
 	cols: [],
@@ -12,7 +11,6 @@ const DEFAULTS = {
 	filter: function() {
 		return true;
 	},
-	aggregator: new CountAggregator(),
 	aggregatorName: "Count",
 	sorters: {},
 	derivedAttributes: {},

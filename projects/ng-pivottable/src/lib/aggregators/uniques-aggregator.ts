@@ -27,13 +27,13 @@ export class UniquesAggregator extends AbstractAggregator {
 }
 
 export class CountUniqueAggregator extends UniquesAggregator {
-	constructor( attr, format:Formatter ) {
+	constructor( attr, format:Formatter = US_FMT_INT ) {
 		super( (x) => x.length, attr, format)
 	}
 }
 
 export class ListUniqueAggregator extends UniquesAggregator {
-	constructor( s, attr, format: Formatter ) {
+	constructor( s, attr, format: Formatter = US_FMT_INT ) {
 		super( ((x) => x.sort(naturalSort).join(s)), ((x)=>x))
 	}
 }

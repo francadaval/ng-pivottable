@@ -7,12 +7,12 @@ export class SumOverSumAggregator extends AbstractAggregator {
 	sumDenom = 0
 	numInputs = 2
 
-	constructor( protected num: string, protected denom: string, protected upper: boolean = true, format: Formatter ) {
+	constructor( protected num: string, protected denom: string, format: Formatter = US_FMT ) {
 		super(format)
 	}
 
 	newAggregator() {
-		return new SumOverSumAggregator( this.num, this.denom, this.upper, this.format )
+		return new SumOverSumAggregator(this.num, this.denom, this.format)
 	}
 
 	push(record) {
@@ -25,7 +25,6 @@ export class SumOverSumAggregator extends AbstractAggregator {
 	}
 
 	value() {
-		let sign = this.upper ? 1 : -1;
-		return (0.821187207574908 / this.sumDenom + this.sumNum / this.sumDenom + 1.2815515655446004 * sign * Math.sqrt(0.410593603787454 / (this.sumDenom * this.sumDenom) + (this.sumNum * (1 - this.sumNum / this.sumDenom)) / (this.sumDenom * this.sumDenom))) / (1 + 1.642374415149816 / this.sumDenom);
+		return this.sumNum / this.sumDenom;
 	}
 }
