@@ -28,6 +28,8 @@ export class NgPivottableComponent implements OnInit {
 	constructor() { }
 
 	ngOnInit() {
+		// TODO: Check locale
+
 		this.pivotData = new PivotData(this.input,{...DEFAULT_OPTIONS,...this.options})
 	}
 

@@ -8,22 +8,30 @@ import { Options, DEFAULT_OPTIONS } from './options'
 })
 export class NgUIPivottableComponent implements OnInit {
 
-	renderers = {
-		"Table": 1,
-		"Heatmap Table": 2
-	}
+	@Input('input')
+	input
 
-	@Input()
-	options
+	@Input('locale')
+	locale: string = 'en';
+
+	@Input('options')
+	options: Options
+
+	@Input('overwrite')
+	overwrite: boolean = false
+
+	get renderers() { return this.opts.renderers };
+	get aggregators() { return this.opts.aggregators }
 
 	opts: Options
-
-	attrValues: any[]
+	attrValues: {[key:string]: any[]}
+	get attrKeys(): string[] { return Object.keys( this.attrValues ) }
+		localeStrings: {}
 
 	protected _shownAttributes: string[] = null
 	get shownAttributes(): string[] {
 		return this._shownAttributes = (this._shownAttributes ||
-			this.attrValues.filter( (attr) => !this.opts.hiddenAttributes.includes(attr) ));
+			this.attrKeys.filter( (attr) => !this.opts.hiddenAttributes.includes(attr) ));
 	};
 
 	protected _shownInAggregators: string[] = null
@@ -50,9 +58,41 @@ export class NgUIPivottableComponent implements OnInit {
 
 	ngOnInit() {
 		this.opts = {...DEFAULT_OPTIONS, ...this.options}
+		//this.localeStrings = {...{}, locales.en.localeStrings, locales[locale].localeStrings);
+
+		this.proccessDataRecords();
+	}
+
+	proccessDataRecords() {
+		this.attrValues = {};
+		let materializedInput = [];
+		let recordsProcessed = 0;
+		this.input.forEachRecord(this.opts.derivedAttributes, function(record) {
+			var attr, base, ref, value;
+			if (this.opts.filter(record)) {
+				materializedInput.push(record);
+				for (attr in record) {
+					this.attrValues[attr] = this.attrValues[attr] || {};
+					if (recordsProcessed > 0)
+						this.attrValues[attr]["null"] = recordsProcessed;
+				}
+
+				for (attr in this.attrValues) {
+					let a = this.attrValues[attr];
+					value = record[attr] != null ? record[attr] : "null";
+					this.a[value] = this.a[value] ? this.a[value] + 1 : 1 
+				}
+
+				return recordsProcessed++;
+			}
+		})
 	}
 
 	changeRenderer( renderer ) {
 
+	}
+
+	changeAggregator( aggregator ) {
+		
 	}
 }

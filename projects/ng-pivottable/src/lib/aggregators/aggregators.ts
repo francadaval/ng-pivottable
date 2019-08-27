@@ -1,4 +1,5 @@
 import { US_FMT_INT } from '../formats'
+import { Aggregator } from './aggregator'
 import { CountAggregator } from './count-aggregator'
 import { MinAggregator, MaxAggregator, FirstAggregator, LastAggregator} from './extremes-aggregator'
 import { FractionOfAggregator } from './fraction-of-aggregator'
@@ -9,7 +10,8 @@ import { SumOverSumAggregator } from './sum-over-sum-aggregator'
 import { SumOverSumBound80Aggregator } from './sum-over-sum-bound80-aggregator'
 import { CountUniqueAggregator, ListUniqueAggregator } from './uniques-aggregator'
 
-export const AGGREGATORS = {
+export type AggregatorsFactory = {[key:string]: (attrs:string[]) => Aggregator }
+export const AGGREGATORS: AggregatorsFactory = {
     "Count": (attrs:string[]) => new CountAggregator(),
     "Count Unique Values": (attrs:string[]) => new CountUniqueAggregator(attrs[0]),
     "List Unique Values": (attrs:string[]) => new ListUniqueAggregator(", ", attrs[0]),

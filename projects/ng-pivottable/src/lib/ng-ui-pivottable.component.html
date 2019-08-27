@@ -1,7 +1,36 @@
 <table class="pvtUi" cellpadding="5">
-	<td class="pvtUiCell">
+	<tr *ngIf="!(opts.unusedAttrsVertical || unusedAttrsVerticalAutoOverride)">
+		<td id="rendererControl" class="pvtUiCell">
+			<select class="pvtRenderer" (change)="changeRenderer(renderers[$event.target.value])">
+				<option *ngFor="let r of renderers | keyvalue" value="{{r.key}}">{{r.key}}</option>
+			</select>
+		</td>
+		<td id="unused" class="pvtAxisContainer pvtUnused pvtUiCell pvtHorizList">
+			<li *ngFor="let attr of shownInDragDrop; index as i" class="axis_{{i}}">
+				<span class="pvtAttr">{{attr}}</span><span class="pvtTriangle">&#x25BE;</span>
+			</li>
+		</td>
+	</tr>
+	<tr>
+		<td *ngIf="opts.unusedAttrsVertical || unusedAttrsVerticalAutoOverride" id="rendererControl" class="pvtUiCell">
+			<select class="pvtRenderer" (change)="changeRenderer(renderers[$event.target.value])">
+				<option *ngFor="let r of renderers | keyvalue" value="{{r.key}}">{{r.key}}</option>
+			</select>
+		</td>
 		<select class="pvtRenderer" (change)="changeRenderer(renderers[$event.target.value])">
 			<option *ngFor="let r of renderers | keyvalue" value="{{r.key}}">{{r.key}}</option>
 		</select>
-	</td>
+		<select class="pvtAggregator" (change)="changeAggregator(aggregators[$event.target.value])">
+			<option *ngFor="let a of aggregators | keyvalue" value="{{a.key}}">{{a.key}}</option>
+		</select>
+	</tr>
+	<tr>
+		<td *ngIf="opts.unusedAttrsVertical || unusedAttrsVerticalAutoOverride" id="unused" class="pvtAxisContainer pvtUnused pvtUiCell pvtVertList">
+			<li *ngFor="let attr of shownInDragDrop; index as i" class="axis_{{i}}">
+				<span class="pvtAttr">{{attr}}</span><span class="pvtTriangle">&#x25BE;</span>
+			</li>
+		</td>
+	</tr>
 </table>
+<!-- unused -->
+
