@@ -95,4 +95,16 @@ export class NgUIPivottableComponent implements OnInit {
 	changeAggregator( aggregator ) {
 		
 	}
+
+	get colOrderSymbol() {
+		return "↕"
+	}
+
+	get rowOrderSymbol() {
+		return "↔"
+	}
+
+	switchColOrder() {}
+
+	switchRowOrder() {}
 }
