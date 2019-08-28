@@ -50,14 +50,14 @@ export class PivotData {
 		this.allTotal = this.aggregator.newAggregator(this, [], []);
 		this.sorted = false;
 		
-		this.forEachRecord(this.input, this.derivedAttributes, (record:Record) => {
+		this.forEachRecord(this.derivedAttributes, (record:Record) => {
 			if (this.filter(record)) {
 				return this.processRecord(record);
 			}
 		})
 	}
 
-	protected forEachRecord = function(input: Data, derivedAttributes: DerivedAttributes, f: (record: Record) => any) {
+	forEachRecord = function(derivedAttributes: DerivedAttributes, f: (record: Record) => any) {
 		//var compactRecord, i, j, k, l, len1, record, ref, results, results1, tblCols;
 
 		let addRecord = f;
@@ -75,13 +75,13 @@ export class PivotData {
 		// TODO: Type 'function' for data
 		/*if (typeof input == 'function') {
 			return input(addRecord);
-		} else*/ if (Array.isArray(input)) {
-			if (Array.isArray(input[0])) {
+		} else*/ if (Array.isArray(this.input)) {
+			if (Array.isArray(this.input[0])) {
 				let results = [];
-				for(let i = 1; i < input.length; ++i) {
-					let compactRecord = input[i];
+				for(let i = 1; i < this.input.length; ++i) {
+					let compactRecord = this.input[i];
 					let record = {};
-					let ref = input[0];
+					let ref = this.input[0];
 					for(let j in ref) {
 						let key = ref[j];
 						record[key] = compactRecord[j];
@@ -91,7 +91,7 @@ export class PivotData {
 				return results;
 			} else {
 				let results = [];
-				for (let record of input) {
+				for (let record of this.input) {
 					results.push(addRecord(record));
 				}
 				return results;
@@ -114,7 +114,7 @@ export class PivotData {
 	};
 
 	protected forEachMatchingRecord(criteria, callback) {
-		return this.forEachRecord(this.input, this.derivedAttributes, (record:Record) => {
+		return this.forEachRecord(this.derivedAttributes, (record:Record) => {
 			if (this.filter(record)) {
 				for (let k in criteria) {
 					if (criteria[k] !== (record[k]) != null ? record[k] : "null") {

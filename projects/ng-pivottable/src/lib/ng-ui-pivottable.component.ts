@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Options, DEFAULT_OPTIONS } from './options'
+import { PivotData } from './pivot-data'
 import { NgPivottableComponent } from './ng-pivottable.component'
 
 const ORDERING = {
@@ -44,12 +45,13 @@ export class NgUIPivottableComponent implements OnInit {
 
 	@ViewChild(NgPivottableComponent, {static: false})
 	pivotTable: NgPivottableComponent
+	get pivotData(): PivotData { return this.pivotTable.pivotData }
 
 	get renderers() { return this.opts.renderers };
 	get aggregators() { return this.opts.aggregators }
 
 	opts: Options
-	attrValues: {[key:string]: any[]}
+	attrValues: {[key:string]: {[key:string]: number}} = {}
 	get attrKeys(): string[] { return Object.keys( this.attrValues ) }
 		localeStrings: {}
 
@@ -84,7 +86,9 @@ export class NgUIPivottableComponent implements OnInit {
 	ngOnInit() {
 		this.opts = {...DEFAULT_OPTIONS, ...this.options}
 		//this.localeStrings = {...{}, locales.en.localeStrings, locales[locale].localeStrings);
+	}
 
+	ngAfterViewInit() {
 		this.proccessDataRecords();
 	}
 
@@ -92,7 +96,7 @@ export class NgUIPivottableComponent implements OnInit {
 		this.attrValues = {};
 		let materializedInput = [];
 		let recordsProcessed = 0;
-		this.input.forEachRecord(this.opts.derivedAttributes, function(record) {
+		this.pivotData.forEachRecord(this.opts.derivedAttributes, (record) => {
 			var attr, base, ref, value;
 			if (this.opts.filter(record)) {
 				materializedInput.push(record);
@@ -105,7 +109,7 @@ export class NgUIPivottableComponent implements OnInit {
 				for (attr in this.attrValues) {
 					let a = this.attrValues[attr];
 					value = record[attr] != null ? record[attr] : "null";
-					this.a[value] = this.a[value] ? this.a[value] + 1 : 1 
+					a[value] = a[value] ? a[value] + 1 : 1 
 				}
 
 				return recordsProcessed++;
