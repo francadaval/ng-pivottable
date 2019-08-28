@@ -2,6 +2,27 @@ import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Options, DEFAULT_OPTIONS } from './options'
 import { NgPivottableComponent } from './ng-pivottable.component'
 
+const ORDERING = {
+	key_a_to_z: {
+		value: "key_a_to_z",
+		rowSymbol: "↕",
+		colSymbol: "↔",
+		next: "value_a_to_z"
+	},
+	value_a_to_z: {
+		value: "value_a_to_z",
+		rowSymbol: "↓",
+		colSymbol: "→",
+		next: "value_z_to_a"
+	},
+	value_z_to_a: {
+		value: "value_z_to_a",
+		rowSymbol: "↑",
+		colSymbol: "←",
+		next: "key_a_to_z"
+	}
+}
+
 @Component({
 	selector: 'ng-ui-pivottable',
 	templateUrl: './ng-ui-pivottable.component.html',
@@ -101,14 +122,22 @@ export class NgUIPivottableComponent implements OnInit {
 	}
 
 	get colOrderSymbol() {
-		return "↕"
+		return ORDERING[this.opts.colOrder].colSymbol
 	}
 
 	get rowOrderSymbol() {
-		return "↔"
+		return ORDERING[this.opts.rowOrder].rowSymbol
 	}
 
-	switchColOrder() {}
+	switchColOrder() {
+		this.opts.colOrder = ORDERING[this.opts.colOrder].next
+		this.refresh()
+	}
+
+	switchRowOrder() {
+		this.opts.rowOrder = ORDERING[this.opts.rowOrder].next
+		this.refresh()
+	}
 
 	refresh() {
 		this._shownAttributes = null
@@ -116,5 +145,5 @@ export class NgUIPivottableComponent implements OnInit {
 		this._shownInDragDrop = null
 		this._attrLength = null
 		this.pivotTable.refresh()
-}
+	}
 }
