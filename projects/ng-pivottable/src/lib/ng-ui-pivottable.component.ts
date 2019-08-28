@@ -1,5 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Options, DEFAULT_OPTIONS } from './options'
+import { NgPivottableComponent } from './ng-pivottable.component'
 
 @Component({
 	selector: 'ng-ui-pivottable',
@@ -19,6 +20,9 @@ export class NgUIPivottableComponent implements OnInit {
 
 	@Input('overwrite')
 	overwrite: boolean = false
+
+	@ViewChild(NgPivottableComponent, {static: false})
+	pivotTable: NgPivottableComponent
 
 	get renderers() { return this.opts.renderers };
 	get aggregators() { return this.opts.aggregators }
@@ -106,5 +110,11 @@ export class NgUIPivottableComponent implements OnInit {
 
 	switchColOrder() {}
 
-	switchRowOrder() {}
+	refresh() {
+		this._shownAttributes = null
+		this._shownInAggregators = null
+		this._shownInDragDrop = null
+		this._attrLength = null
+		this.pivotTable.refresh()
+}
 }
