@@ -78,7 +78,7 @@ export class NgUIPivottableComponent implements OnInit {
 		( this.shownInDragDrop.length ? this.shownInDragDrop.map((str)=>str.length).reduce((prev,curr)=>prev+curr) : 0 ) :
 		this._attrLength }
 
-	get unusedAttrsVerticalAutoCutoff() { return this.opts.unusedAttrsVertical == 'auto' ? 120 : this.opts.unusedAttrsVertical }
+	get unusedAttrsVerticalAutoCutoff(): number { return this.opts.unusedAttrsVertical == 'auto' ? 120 : (this.opts.unusedAttrsVertical ? this.opts.unusedAttrsVertical : null ) }
 	get unusedAttrsVerticalAutoOverride() { return this.attrLength > this.unusedAttrsVerticalAutoCutoff }
 
 	constructor() { }

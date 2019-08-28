@@ -29,7 +29,7 @@ export interface Options {
 	hiddenFromDragDrop: string[];
     menuLimit: number;
 
-	unusedAttrsVertical: 'auto' | number;
+	unusedAttrsVertical: 'auto' | number | false;
     autoSortUnusedAttrs: boolean,
 	
 	table: {
@@ -73,7 +73,7 @@ export const DEFAULT_OPTIONS: Options = {
 	hiddenFromDragDrop: [],
 	menuLimit: 500,
 
-	unusedAttrsVertical: 'auto',
+	unusedAttrsVertical: false,
 	autoSortUnusedAttrs: false,
 
 	table: {
