@@ -2,18 +2,12 @@ import { Aggregator, VoidAggregator, CountAggregator, AGGREGATORS } from './aggr
 import { Sorter, naturalSort } from './sorters'
 import { Deriver, DerivedAttributes } from './derivers'
 import { Record, Data } from './types'
+import { DataOptions, DEFAULT_DATA_OPTIONS } from './options'
 
 export class PivotData {
 	protected aggregator: Aggregator
-	protected aggregatorName: string
-	public colAttrs: string[]
-	public rowAttrs: string[]
-	protected valAttrs: string[]
-	protected sorters: {[key: string]: Sorter}
-	protected rowOrder: string
-	protected colOrder: string
+
 	protected derivedAttributes: DerivedAttributes
-	protected filter: (record:Record) => boolean
 
 	protected _rowKeys: string[][] = [];
 	protected _colKeys: string[][] = [];
@@ -26,6 +20,8 @@ export class PivotData {
 		this.sortKeys();
 		return this._rowKeys;
 	};
+	public get colAttrs(): string [] { return this.opts.cols }
+	public get rowAttrs(): string [] { return this.opts.rows }
 
 	protected tree: {[key: string]: {[key: string]: Aggregator}} = {};
 	protected rowTotals:{[key: string]: Aggregator} = {};
@@ -33,25 +29,16 @@ export class PivotData {
 	protected allTotal: Aggregator
 	protected sorted: boolean = false
 
-	constructor(protected input, public opts) {
-		if (!this.opts)
-			this.opts = {};
+	constructor(protected input, public opts: any) {
+		this.opts = {...DEFAULT_DATA_OPTIONS,...this.opts}
 
 		this.aggregator = opts.aggregator ? opts.aggregator : (opts.aggregatorName ? AGGREGATORS[opts.aggregatorName](opts.vals) : new CountAggregator());
-		this.aggregatorName = opts.aggregatorName ? opts.aggregatorName : "Count";
-		this.colAttrs = opts.cols ? opts.cols : [];
-		this.rowAttrs = opts.rows ? opts.rows : [];
-		this.valAttrs = opts.vals ? opts.vals : [];
-		this.sorters = opts.sorters ? opts.sorters : {};
-		this.rowOrder = opts.rowOrder ? opts.rowOrder : "key_a_to_z";
-		this.colOrder = opts.colOrder ? opts.colOrder : "key_a_to_z";
-		this.derivedAttributes = opts.derivedAttributes ? opts.derivedAttributes : {};
-		this.filter = opts.filter ? opts.filter : (record:Record) => true;
+
 		this.allTotal = this.aggregator.newAggregator(this, [], []);
 		this.sorted = false;
 		
-		this.forEachRecord(this.derivedAttributes, (record:Record) => {
-			if (this.filter(record)) {
+		this.forEachRecord(this.opts.derivedAttributes, (record:Record) => {
+			if (this.opts.filter(record)) {
 				return this.processRecord(record);
 			}
 		})
@@ -115,7 +102,7 @@ export class PivotData {
 
 	protected forEachMatchingRecord(criteria, callback) {
 		return this.forEachRecord(this.derivedAttributes, (record:Record) => {
-			if (this.filter(record)) {
+			if (this.opts.filter(record)) {
 				for (let k in criteria) {
 					if (criteria[k] !== (record[k]) != null ? record[k] : "null") {
 						return;
@@ -127,7 +114,7 @@ export class PivotData {
 	};
 
 	protected sorter(attr:string): Sorter {
-		return this.sorters[attr] || naturalSort;
+		return this.opts.sorters[attr] || naturalSort;
 	};
 
 	protected arrSort(attrs:string[]): Sorter {
@@ -148,7 +135,7 @@ export class PivotData {
 			this.sorted = true;
 			let v = (r, c) => this.getAggregator(r, c).value();
 
-			switch (this.rowOrder) {
+			switch (this.opts.rowOrder) {
 				case "value_a_to_z":
 					this._rowKeys.sort((a,b) => naturalSort(v(a, []), v(b, [])));
 					break;
@@ -156,15 +143,15 @@ export class PivotData {
 					this._rowKeys.sort((a,b) => -naturalSort(v(a, []), v(b, [])));
 					break;
 				default:
-					this._rowKeys.sort(this.arrSort(this.rowAttrs));
+					this._rowKeys.sort(this.arrSort(this.opts.rows));
 			}
-			switch (this.colOrder) {
+			switch (this.opts.colOrder) {
 				case "value_a_to_z":
 					return this._colKeys.sort((a,b) => naturalSort(v([], a), v([], b)));
 				case "value_z_to_a":
 					return this._colKeys.sort((a,b) => -naturalSort(v([], a), v([], b)));
 				default:
-					return this._colKeys.sort(this.arrSort(this.colAttrs));
+					return this._colKeys.sort(this.arrSort(this.opts.cols));
 			}
 		}
 	};
@@ -172,13 +159,13 @@ export class PivotData {
 	protected processRecord(record:Record) {
 		let colKey: string[] = [];
 		let rowKey: string[] = [];
-		for (let l = 0, len1 = this.colAttrs.length; l < len1; l++) {
-			let x = this.colAttrs[l];
+		for (let l = 0, len1 = this.opts.cols.length; l < len1; l++) {
+			let x = this.opts.cols[l];
 			colKey.push(record[x] != null ? record[x] : "null");
 		}
 
-		for (let n = 0, len2 = this.rowAttrs.length; n < len2; n++) {
-			let x = this.rowAttrs[n];
+		for (let n = 0, len2 = this.opts.rows.length; n < len2; n++) {
+			let x = this.opts.rows[n];
 			rowKey.push(record[x] != null ? record[x] : "null");
 		}
 

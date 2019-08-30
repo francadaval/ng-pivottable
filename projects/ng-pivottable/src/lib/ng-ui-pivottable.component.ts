@@ -2,6 +2,7 @@ import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Options, DEFAULT_OPTIONS } from './options'
 import { PivotData } from './pivot-data'
 import { NgPivottableComponent } from './ng-pivottable.component'
+import { AggregatorsFactory } from './aggregators'
 
 const ORDERING = {
 	key_a_to_z: {
@@ -43,34 +44,32 @@ export class NgUIPivottableComponent implements OnInit {
 	@Input('overwrite')
 	overwrite: boolean = false
 
-	@ViewChild(NgPivottableComponent, {static: false})
-	pivotTable: NgPivottableComponent
-	get pivotData(): PivotData { return this.pivotTable.pivotData }
+	pivotData: PivotData
 
 	get renderers() { return this.opts.renderers };
-	get aggregators() { return this.opts.aggregators }
+	get aggregators(): AggregatorsFactory { return this.opts.aggregators }
 
 	opts: Options
-	attrValues: {[key:string]: {[key:string]: number}} = {}
-	get attrKeys(): string[] { return Object.keys( this.attrValues ) }
-		localeStrings: {}
+	attrValues: {[key:string]: {[key:string]: number}}
+	get attrKeys(): string[] { return this.attrValues ?  Object.keys( this.attrValues ) : null }
+	localeStrings: {}
 
 	protected _shownAttributes: string[] = null
 	get shownAttributes(): string[] {
-		return this._shownAttributes = (this._shownAttributes ||
-			this.attrKeys.filter( (attr) => !this.opts.hiddenAttributes.includes(attr) ));
+		return this._shownAttributes = (this._shownAttributes || ( this.attrKeys ? 
+			this.attrKeys.filter( (attr) => !this.opts.hiddenAttributes.includes(attr) ) : null ));
 	};
 
 	protected _shownInAggregators: string[] = null
 	get shownInAggregators(): string[] {
-		return this._shownInAggregators = (this._shownInAggregators || 
-			this.shownAttributes.filter( (attr) => !this.opts.hiddenFromAggregators.includes(attr) ));
+		return this._shownInAggregators = (this._shownInAggregators || ( this.shownAttributes ? 
+			this._shownAttributes.filter( (attr) => !this.opts.hiddenFromAggregators.includes(attr) ) : null ));
 	}
 
 	protected _shownInDragDrop: string[] = null
 	get shownInDragDrop() {
-		return this._shownInDragDrop = (this._shownInDragDrop || 
-			this.shownAttributes.filter( (attr) => !this.opts.hiddenFromDragDrop.includes(attr) ));
+		return this._shownInDragDrop = (this._shownInDragDrop || ( this.shownAttributes ?
+			this._shownAttributes.filter( (attr) => !this.opts.hiddenFromDragDrop.includes(attr) ) : null ));
 	}
 	
 	protected _attrLength: number = null;
@@ -86,6 +85,8 @@ export class NgUIPivottableComponent implements OnInit {
 	ngOnInit() {
 		this.opts = {...DEFAULT_OPTIONS, ...this.options}
 		//this.localeStrings = {...{}, locales.en.localeStrings, locales[locale].localeStrings);
+		this.pivotData = new PivotData(this.input,this.opts);
+		this.proccessDataRecords()
 	}
 
 	ngAfterViewInit() {
@@ -148,6 +149,6 @@ export class NgUIPivottableComponent implements OnInit {
 		this._shownInAggregators = null
 		this._shownInDragDrop = null
 		this._attrLength = null
-		this.pivotTable.refresh()
+		this.pivotData = new PivotData(this.input,this.opts);
 	}
 }

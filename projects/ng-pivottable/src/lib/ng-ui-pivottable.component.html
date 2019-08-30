@@ -7,7 +7,7 @@
 		</td>
 		<td id="unused" class="pvtAxisContainer pvtUnused pvtUiCell pvtHorizList">
 			<li *ngFor="let attr of shownInDragDrop; index as i" class="axis_{{i}}">
-				<span class="pvtAttr">{{attr}}</span><span class="pvtTriangle">&#x25BE;</span>
+				<span class="pvtAttr">{{attr}} <span class="pvtTriangle">&#x25BE;</span></span>
 			</li>
 		</td>
 		<td class="pvtAxisContainer pvtHorizList pvtCols pvtUiCell">
@@ -31,14 +31,14 @@
 	<tr id="tr2">
 		<td id="unused" *ngIf="opts.unusedAttrsVertical || unusedAttrsVerticalAutoOverride" class="pvtAxisContainer pvtUnused pvtUiCell pvtVertList">
 			<li *ngFor="let attr of shownInDragDrop; index as i" class="axis_{{i}}">
-				<span class="pvtAttr">{{attr}}</span><span class="pvtTriangle">&#x25BE;</span>
+				<span class="pvtAttr">{{attr}} <span class="pvtTriangle">&#x25BE;</span></span>
 			</li>
 		</td>
 		<td class="pvtAxisContainer pvtRows pvtUiCell" valign="top">
 			
 		</td>
 		<td class="pvtRendererArea" valign="top">
-			<ng-pivottable [input]="input" [options]="opts"></ng-pivottable>
+			<ng-pivottable [pivotData]="pivotData" [options]="opts.table"></ng-pivottable>
 		</td>
 	</tr>
 </table>

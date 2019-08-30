@@ -1,39 +1,35 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { PivotData } from './pivot-data'
-import { Options, DEFAULT_OPTIONS } from './options'
+import { TableOptions, TABLE_OPTION_DEFAULTS } from './options'
 
 @Component({
 	selector: 'ng-pivottable',
 	templateUrl: './ng-pivottable.component.html',
 	styleUrls: ['./ng-pivottable.component.scss']
 })
-export class NgPivottableComponent implements OnInit {
+export class NgPivottableComponent {
 
-	pivotData: PivotData
 	get colAttrs() { return this.pivotData.colAttrs }
 	get rowAttrs() { return this.pivotData.rowAttrs }
 	get colKeys() { return this.pivotData.colKeys }
 	get rowKeys() { return this.pivotData.rowKeys }
-	get opts() { return this.pivotData.opts }
 
-	@Input('input')
-	input
+	@Input('pivotData')
+	pivotData: PivotData
 
 	@Input('locale')
 	locale: string = 'en';
 
+	protected _options: TableOptions
 	@Input('options')
-	options: Options
-
-	constructor() { }
-
-	ngOnInit() {
-		// TODO: Check locale
-		this.refresh();
+	set options(opts) {
+		this._options = {...TABLE_OPTION_DEFAULTS, ...this.options}
 	}
+	get options(): TableOptions { return this._options }
 
-	refresh() {
-		this.pivotData = new PivotData(this.input,{...DEFAULT_OPTIONS,...this.options})
+	// TODO: Location service
+	localeStrings = {
+		totals: "Totals"
 	}
 
 	drawable(arr,i,j) {
@@ -91,7 +87,7 @@ export class NgPivottableComponent implements OnInit {
 			}
 		}
 
-		return this.opts.table.clickCallback ? (e) => this.opts.table.clickCallback(e, value, filters, this.pivotData) : null;
+		return this.options.clickCallback ? (e) => this.options.clickCallback(e, value, filters, this.pivotData) : null;
 	};
 
 	clickCallback(rk,ck,event) {

@@ -8,11 +8,11 @@
 					{{ck}}
 				</th>
 			</ng-container>
-			<th *ngIf="j==0 || opts.table.rowTotals" class="pvtTotalLabel pvtRowTotalLabel" [attr.rowspan]="colAttrs.length+(rowAttrs.length==0?0:1)">{{opts.localeStrings.totals}}</th>
+			<th *ngIf="j==0 || options.rowTotals" class="pvtTotalLabel pvtRowTotalLabel" [attr.rowspan]="colAttrs.length+(rowAttrs.length==0?0:1)">{{localeStrings.totals}}</th>
 		</tr>
 		<tr *ngIf="rowAttrs.length!=0">
 			<th *ngFor="let r of rowAttrs; index as i" class="pvtAxisLabel">{{r}}</th>
-			<th [ngClass]="{'pvtTotalLabel': colAttrs.length == 0, 'pvtRowTotalLabel': colAttrs.length == 0}">{{colAttrs.length === 0 ? opts.localeStrings.totals : ''}}</th>
+			<th [ngClass]="{'pvtTotalLabel': colAttrs.length == 0, 'pvtRowTotalLabel': colAttrs.length == 0}">{{colAttrs.length === 0 ? localeStrings.totals : ''}}</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -23,12 +23,12 @@
 			<ng-container *ngFor="let ck of colKeys; index as j">
 				<td [ngClass]="'pvtVal' + ' row'+i + ' col'+j" [attr.data-value]="value(rk,ck)" (click)="clickCallback(rk,ck,$event)">{{formattedValue(rk,ck)}}</td>
 			</ng-container>
-			<td *ngIf="opts.table.rowTotals || colAttrs.length == 0" class="pvtTotal rowTotal" [attr.data-value]="value(rk,[])" [attr.data-for]="'row'+i" (click)="clickCallback(rk,[],$event)">{{formattedValue(rk,[])}}</td>
+			<td *ngIf="options.rowTotals || colAttrs.length == 0" class="pvtTotal rowTotal" [attr.data-value]="value(rk,[])" [attr.data-for]="'row'+i" (click)="clickCallback(rk,[],$event)">{{formattedValue(rk,[])}}</td>
 		</tr>
-		<tr *ngIf="opts.table.colTotals||rowAttrs.length==0">
-			<th class="pvtTotalLabel pvtColTotalLabel" [attr.colspan]="rowAttrs.length + (colAttrs.length == 0 ? 0 : 1)">{{opts.localeStrings.totals}}</th>
+		<tr *ngIf="options.colTotals||rowAttrs.length==0">
+			<th class="pvtTotalLabel pvtColTotalLabel" [attr.colspan]="rowAttrs.length + (colAttrs.length == 0 ? 0 : 1)">{{localeStrings.totals}}</th>
 			<td *ngFor="let ck of colKeys; index as j" class="pvtTotal colTotal" [attr.data-value]="value([],ck)" [attr.data-for]="'col'+j" (click)="clickCallback([],ck,$event)">{{formattedValue([],ck)}}</td>
-			<td *ngIf="opts.table.rowTotals||colAttrs.length==0" class="pvtGrandTotal" [attr.data-value]="value([],[])"  (click)="clickCallback([],[],$event)">{{formattedValue([],[])}}</td>
+			<td *ngIf="options.rowTotals||colAttrs.length==0" class="pvtGrandTotal" [attr.data-value]="value([],[])"  (click)="clickCallback([],[],$event)">{{formattedValue([],[])}}</td>
 		<tr>
 	</tbody>
 </table>

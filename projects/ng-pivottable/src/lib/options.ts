@@ -1,29 +1,40 @@
 import { PivotData } from './pivot-data'
 import { Sorter } from './sorters'
 import { Deriver } from './derivers'
-import { AggregatorsFactory, AGGREGATORS } from './aggregators'
+import { Aggregator, AggregatorsFactory, AGGREGATORS } from './aggregators'
 
-export interface Options {
+export interface DataOptions {
+	aggregator?: Aggregator;
+	aggregatorName?: string;
+
 	cols: string[];
 	rows: string[];
 	vals: string[];
 
-    aggregators: AggregatorsFactory;
+	rowOrder: string;
+	colOrder: string;
+	sorters: {[key:string]: Sorter};
+
+	filter: (record) => boolean;
+
+	derivedAttributes: {[derAttr:string]:Deriver};
+}
+
+export interface TableOptions {
+	clickCallback: any,
+	rowTotals: boolean,
+	colTotals: boolean
+}
+
+export interface Options extends DataOptions {
+	aggregators: AggregatorsFactory;
     renderers: any;
     
     exclusions: string[];
     inclusions: string[];
-
-	rowOrder: string;
-	colOrder: string;
-
-	filter: (record) => boolean;
-	aggregatorName: string;
-	sorters: {[key:string]: Sorter},
 	
     onRefresh: any;
     showUI: boolean;
-	derivedAttributes: {[derAttr:string]:Deriver};
 	hiddenAttributes: string[];
 	hiddenFromAggregators: string[];
 	hiddenFromDragDrop: string[];
@@ -32,22 +43,38 @@ export interface Options {
 	unusedAttrsVertical: 'auto' | number | false;
     autoSortUnusedAttrs: boolean,
 	
-	table: {
-		clickCallback: any,
-		rowTotals: boolean,
-		colTotals: boolean
-	};
-
 	localeStrings: {[key:string]:string}
+
+	table: TableOptions
 }
 
-export const DEFAULT_OPTIONS: Options = {
+export const DEFAULT_DATA_OPTIONS: DataOptions = {
+	aggregatorName: "Count",
+
 	cols: [],
 	rows: [],
 	vals: [],
 
+	rowOrder: "key_a_to_z",
+	colOrder: "key_a_to_z",
+	sorters: {},
+
+	filter: () => true,
+
+	derivedAttributes: {}
+}
+
+export const TABLE_OPTION_DEFAULTS: TableOptions = {
+	clickCallback: null,
+	rowTotals: true,
+	colTotals: true
+}
+
+export const DEFAULT_OPTIONS: Options = {
+	...DEFAULT_DATA_OPTIONS,
+
 	aggregators: AGGREGATORS,
-	// TODO: Provisional
+
 	renderers: 	{
 		"Table": 1,
 		"Heatmap Table": 2
@@ -56,31 +83,18 @@ export const DEFAULT_OPTIONS: Options = {
 	exclusions: [],
     inclusions: [],
 
-	rowOrder: "key_a_to_z",
-	colOrder: "key_a_to_z",
-
-	filter: function() {
-		return true;
-	},
-	aggregatorName: "Count",
-	sorters: {},
 
 	onRefresh: null,
 	showUI: true,
-	derivedAttributes: {},
 	hiddenAttributes: [],
 	hiddenFromAggregators: [],
 	hiddenFromDragDrop: [],
 	menuLimit: 500,
 
-	unusedAttrsVertical: false,
+	unusedAttrsVertical: 'auto',
 	autoSortUnusedAttrs: false,
 
-	table: {
-		clickCallback: null,
-		rowTotals: true,
-		colTotals: true
-	},
+	table: TABLE_OPTION_DEFAULTS,
 
 	localeStrings: {
 		totals: "Totals"
